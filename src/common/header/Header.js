@@ -1,4 +1,4 @@
-import React, {Fragment, useState} from "react";
+import React, {Fragment, useEffect, useState} from "react";
 import logo from '../../assets/logo.svg';
 import {Button, Tabs, Tab, Typography, Grid, InputLabel, Input, FormHelperText} from "@material-ui/core";
 import Modal from 'react-modal';
@@ -21,6 +21,7 @@ function Error() {
     );
 }
 
+
 const Header = function (props) {
 
     const [addUserForm, setAddUserForm] = useState({
@@ -38,7 +39,19 @@ const Header = function (props) {
             mobile_number: '',
         }
     });
+    const [loginForm, setLoginForm] = useState({
+        id: 0,
+        username: '1@gmail.com',
+        password: '123123',
+        errors: {
+            username: '',
+            password: ''
+        }
+    });
     const [addUserFormMessage, setAddUserFormMessage] = useState("");
+    const [loginFormMessage, setLoginFormMessage] = useState("");
+    const [userInformation, setUserInformation] = useState({});
+    const [token, setToken] = useState("eyJraWQiOiJkN2NmNzQxYS1mMjViLTQ0YjItOTI3ZS1jYTE3ZWY3NWM2YzQiLCJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJhdWQiOiI2ODE4MmEzMi0yYWQ1LTRhNGUtOWMxOC1jMmVjNDQ4NGRkZDgiLCJpc3MiOiJodHRwczovL21vdmllYXBwLmNvbSIsImV4cCI6MTYzNDYxMSwiaWF0IjoxNjM0NTgyfQ.eZLe8MhYT3Dk2SnNc-yItVKvxIavfLRp2k9FlS9z0XSwtLfPd4OtWINgmGFgCQfEAlaqODoXXCPl1JcOZxb1LA");
 
     async function addUserHandler(newUser) {
 
@@ -61,10 +74,130 @@ const Header = function (props) {
         }
     }
 
+    async function loginHandler(user) {
+
+        const authentication = btoa(`${user.username}:${user.password}`);
+
+        const rawResponse = await fetch("http://localhost:8085/api/v1/auth/login",
+            {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    "authorization": `Basic ${authentication}`
+                }
+            }
+        );
+
+        const data = await rawResponse.json();
+        const headers = await rawResponse.headers;
+
+        if (data.status === "ACTIVE") {
+            setToken(headers.get('access-token'));
+            setUserInformation(data);
+            setModalShow(false)
+        } else {
+            setLoginFormMessage(data.message);
+        }
+    }
+
+    async function logoutHandler(token) {
+
+        const rawResponse = await fetch("http://localhost:8085/api/v1/auth/logout",
+            {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    "authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        setToken("");
+        setUserInformation("");
+        setModalShow(false)
+        setLoginFormMessage("");
+    }
+
+    function BeforeLoginButtons() {
+        return (
+            <Fragment>
+                <Button
+                    variant="contained"
+                    className="custom-button"
+                    color="primary"
+                    onClick={() => setModalShow(true)}>Book
+                    Show</Button>
+                <Button
+                    variant="contained"
+                    className="custom-button"
+                    onClick={() => setModalShow(true)}>Login</Button>
+            </Fragment>
+        );
+    }
+
+    function AfterLoginButtons() {
+        return (
+            <Fragment>
+                <Button
+                    variant="contained"
+                    className="custom-button"
+                    color="primary">Book
+                    Show</Button>
+
+
+                <Button
+                    variant="contained"
+                    className="custom-button"
+                    onClick={() => logoutHandler(token)}>Logout</Button>
+            </Fragment>
+        );
+    }
+
     function checkEmptyValue(value) {
-        return (value.length == 0)
+        return (value.length === 0)
             ? 'required'
             : '';
+    }
+
+    const inputLoginChangedHandler = (e) => {
+        const state = loginForm;
+        const {name, value} = e.target;
+        let errors = state.errors;
+
+        switch (name) {
+            case 'username':
+                errors.username = checkEmptyValue(value);
+                break;
+            case 'password':
+                errors.password = checkEmptyValue(value);
+                break;
+            default:
+                break;
+        }
+
+        state[e.target.name] = e.target.value;
+        setLoginForm({...state});
+    }
+
+    const onLoginFormSubmitted = (e) => {
+        e.preventDefault();
+        const state = loginForm;
+        let errors = state.errors;
+        // On submit validation
+        if (state.username.length === 0) {
+            errors.username = "required";
+        }
+        if (state.password.length === 0) {
+            errors.password = "required";
+        }
+
+        // set state if errors found
+        if (state.errors.username.length > 0 ||
+            state.errors.password.length > 0) {
+            setLoginForm({...state});
+        } else {
+            loginHandler(loginForm);
+        }
     }
 
     const inputChangedHandler = (e) => {
@@ -131,34 +264,29 @@ const Header = function (props) {
 
     const {first_name, last_name, email_address, password, mobile_number} = addUserForm;
 
+    const {username, loginPassword} = loginForm;
+
     const [modalShow, setModalShow] = useState(false);
-    const [value, setValue] = React.useState(1);
+    const [value, setValue] = React.useState(0);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
+
+    useEffect(() => {
+        console.log(token)
+    }, [userInformation]);
 
     return (
         <Fragment>
             <div className="header">
                 <img src={logo} alt="movie app logo" className="appLogo"/>
                 <div>
-                    <Button
-                        variant="contained"
-                        className="custom-button"
-                        color="primary">Book
-                        Show</Button>
-                    <Button
-                        variant="contained"
-                        className="custom-button"
-                        onClick={() => setModalShow(true)}>Login</Button>
-                    <Button
-                        variant="contained"
-                        className="custom-button">Logout</Button>
+                    {token.length === 0 ? <BeforeLoginButtons/> : <AfterLoginButtons/>}
                 </div>
             </div>
             <Modal
-                isOpen={true}
+                isOpen={modalShow}
                 shouldCloseOnOverlayClick={false}
                 onRequestClose={() => setModalShow(false)}
                 ariaHideApp={false}
@@ -179,35 +307,55 @@ const Header = function (props) {
                     <Tab label="REGISTER"/>
                 </Tabs>
                 <TabPanel value={value} index={0}>
-                    <Grid container direction="column" alignItems="center" justify="center">
-                        <FormControl
-                            className="form-field"
-                            variant="standard"
-                            style={{
-                                marginTop: "20px"
-                            }}
-                        >
-                            <InputLabel htmlFor="username">Username *</InputLabel>
-                            <Input id="username"/>
-                        </FormControl>
-                        <FormControl
-                            className="form-field"
-                            variant="standard"
-                            style={{
-                                marginTop: "20px"
-                            }}>
-                            <InputLabel htmlFor="password">Password *</InputLabel>
-                            <Input id="password"/>
-                        </FormControl>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            size="large"
-                            style={{
-                                marginTop: "40px"
-                            }}
-                        >LOGIN</Button>
-                    </Grid>
+                    <form onSubmit={onLoginFormSubmitted}>
+                        <Grid container direction="column" alignItems="center" justify="center">
+                            <FormControl
+                                style={{
+                                    marginTop: "20px"
+                                }}>
+                                <InputLabel htmlFor="password">Username *</InputLabel>
+                                <Input
+                                    id="username"
+                                    className="form-field"
+                                    type="text"
+                                    name="username"
+                                    onChange={inputLoginChangedHandler}
+                                    value={username}/>
+                                {loginForm.errors.username.length > 0 &&
+                                <Error>{loginForm.errors.username}</Error>}
+                            </FormControl>
+                            <FormControl
+                                style={{
+                                    marginTop: "20px"
+                                }}>
+                                <InputLabel htmlFor="password">Password *</InputLabel>
+                                <Input
+                                    id="password"
+                                    className="form-field"
+                                    type="password"
+                                    name="password"
+                                    onChange={inputLoginChangedHandler}
+                                    value={loginPassword}/>
+                                {loginForm.errors.password.length > 0 &&
+                                <Error>{loginForm.errors.password}</Error>}
+                            </FormControl>
+                            {loginFormMessage.length > 0 &&
+                            <Typography
+                                style={{
+                                    marginTop: "30px",
+                                    fontSize: "16px"
+                                }}>{loginFormMessage}</Typography>}
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                size="large"
+                                style={{
+                                    marginTop: "40px"
+                                }}
+                            >LOGIN</Button>
+                        </Grid>
+                    </form>
                 </TabPanel>
                 <TabPanel value={value} index={1}>
                     <form onSubmit={onRegisterFormSubmitted}>
