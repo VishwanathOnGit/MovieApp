@@ -6,6 +6,7 @@ import './Header.css';
 import FormControl from "@material-ui/core/FormControl";
 import {Link} from "react-router-dom";
 
+// Component for Tab Panel
 function TabPanel(props) {
     const {children, value, index, ...other} = props;
 
@@ -16,6 +17,7 @@ function TabPanel(props) {
     );
 }
 
+// Component for Error Text
 function Error() {
     return (
         <FormHelperText style={{color: "red"}}>required</FormHelperText>
@@ -27,11 +29,15 @@ const Header = function (props) {
 
     useEffect(() => {
         if (props.match) {
+            // check url and set url
+            // if match found
             setUrl(props.match.url.split("/"));
         }
+        // Set Token
         setToken(localStorage.getItem("token"));
     }, [props]);
 
+    // Declare state variables
     const [addUserForm, setAddUserForm] = useState({
         id: 0,
         first_name: '',
@@ -61,6 +67,7 @@ const Header = function (props) {
     const [token, setToken] = useState("");
     const [url, setUrl] = useState([]);
 
+    // This function is responsible for adding new user
     async function addUserHandler(newUser) {
 
         const rawResponse = await fetch("http://localhost:8085/api/v1/signup",
@@ -82,6 +89,7 @@ const Header = function (props) {
         }
     }
 
+    // This function is responsible for authorizing User
     async function loginHandler(user) {
 
         const authentication = btoa(`${user.username}:${user.password}`);
@@ -100,7 +108,7 @@ const Header = function (props) {
         const headers = await rawResponse.headers;
 
         if (data.status === "ACTIVE") {
-
+            // on successful login save details in local storage
             localStorage.setItem('token', headers.get('access-token'));
             localStorage.setItem('userInfo', data);
             setToken(headers.get('access-token'));
@@ -110,6 +118,7 @@ const Header = function (props) {
         }
     }
 
+    // This function is responsible for destroy current session
     async function logoutHandler(token) {
         await fetch("http://localhost:8085/api/v1/auth/logout",
             {
@@ -127,6 +136,7 @@ const Header = function (props) {
         localStorage.clear();
     }
 
+    // Before Login Button Components
     function BeforeLoginButtons() {
         return (
             <Fragment>
@@ -146,6 +156,7 @@ const Header = function (props) {
         );
     }
 
+    // After Login Button Components
     function AfterLoginButtons() {
         return (
             <Fragment>
@@ -167,12 +178,14 @@ const Header = function (props) {
         );
     }
 
+    // Check if given param is empty or not
     function checkEmptyValue(value) {
         return (value.length === 0)
             ? 'required'
             : '';
     }
 
+    // Login input field change handler
     const inputLoginChangedHandler = (e) => {
         const state = loginForm;
         const {name, value} = e.target;
@@ -193,6 +206,7 @@ const Header = function (props) {
         setLoginForm({...state});
     }
 
+    // Login form handler
     const onLoginFormSubmitted = (e) => {
         e.preventDefault();
         const state = loginForm;
@@ -214,6 +228,7 @@ const Header = function (props) {
         }
     }
 
+    // Input fielf Change Handler
     const inputChangedHandler = (e) => {
         const state = addUserForm;
         const {name, value} = e.target;
@@ -243,6 +258,7 @@ const Header = function (props) {
         setAddUserForm({...state});
     }
 
+    // Register Form Handler
     const onRegisterFormSubmitted = (e) => {
         e.preventDefault();
         const state = addUserForm;
@@ -276,11 +292,16 @@ const Header = function (props) {
         }
     }
 
+    // retrieve register form data
     const {first_name, last_name, email_address, password, mobile_number} = addUserForm;
 
+    // retrieve login form data
     const {username, loginPassword} = loginForm;
 
+    // Modal state
     const [modalShow, setModalShow] = useState(false);
+
+    // Value to track TabPanel state
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event, newValue) => {

@@ -6,6 +6,7 @@ import './Details.css';
 import YouTube from "react-youtube";
 import StarBorderOutlinedIcon from '@material-ui/icons/StarBorderOutlined';
 
+// Required to remove the deprecated warnings
 createMuiTheme({
     typography: {
         useNextVariants: true,
@@ -13,13 +14,14 @@ createMuiTheme({
 });
 
 const Content = (props) => {
-
+    // Declare state variables
     const [movieData, setMovieDetail] = useState({});
     const [ytData, setYTDetail] = useState("");
     const [genreData, setGenreDetail] = useState("");
     const [dateData, setDateDetail] = useState("");
     const [artistData, setArtistDetail] = useState([]);
 
+    // function to get movie
     async function loadData() {
         const rawResponse = await fetch(props.baseUrl + "movies/" + props.match.params.id, {
             method: "GET",
@@ -29,14 +31,15 @@ const Content = (props) => {
             }
         });
 
+        // Handling response
         const data = await rawResponse.json();
-
         const youTubeString = data.trailer_url.split("=")[1];
         const genreString = data.genres.join(", ");
         const tempDate = new Date(data.release_date);
         const releaseDateString = tempDate.toDateString();
         const artistData = data.artists;
 
+        // Set state
         setArtistDetail(artistData);
         setGenreDetail(genreString);
         setYTDetail(youTubeString);

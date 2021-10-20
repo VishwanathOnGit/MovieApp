@@ -24,6 +24,7 @@ import {Link} from "react-router-dom";
 const UpcomingMovies = () => {
     const [upcomingMoviesList, setUpcomingMoviesList] = useState([]);
 
+    // function to get upcoming movies
     async function loadData() {
         const rawResponse = await fetch("http://localhost:8085/api/v1/movies?status=PUBLISHED");
         const data = await rawResponse.json();
@@ -62,6 +63,7 @@ const UpcomingMovies = () => {
 
 const ReleasedMovies = (props) => {
 
+    // modify default theme configuration
     const theme = createMuiTheme({
         typography: {
             useNextVariants: true,
@@ -71,6 +73,7 @@ const ReleasedMovies = (props) => {
         },
     });
 
+    // declare state variables
     const [releasedMoviesList, setReleasedMoviesList] = useState([]);
     const [genreList, setGenreList] = useState([]);
     const [genreFormList, setGenreFormList] = useState([]);
@@ -86,6 +89,7 @@ const ReleasedMovies = (props) => {
         return tempDate.toDateString();
     }
 
+    // Handle Filter Form Submission
     const onFilterFormSubmitted = (e) => {
         e.preventDefault();
         let filterData = "";
@@ -128,6 +132,9 @@ const ReleasedMovies = (props) => {
         loadData(filterData);
     }
 
+    // Function calls all the released movies
+    // @filterData: Query Parameters to fetch related data
+    // @filterData: By default the value is set to empty string ("")
     async function loadData(filterData = "") {
         const rawResponse = await fetch("http://localhost:8085/api/v1/movies?status=RELEASED" + filterData);
         const data = await rawResponse.json();
@@ -135,6 +142,7 @@ const ReleasedMovies = (props) => {
         setReleasedMoviesList(data.movies);
     }
 
+    // Function to fetch all the Genres
     async function loadGenreData() {
         const rawResponse = await fetch("http://localhost:8085/api/v1/genres");
         const data = await rawResponse.json();
@@ -142,6 +150,7 @@ const ReleasedMovies = (props) => {
         setGenreList(data.genres);
     }
 
+    // Function to fetch all the Artists
     async function loadArtistData() {
         const rawResponse = await fetch("http://localhost:8085/api/v1/artists");
         const data = await rawResponse.json();
@@ -150,28 +159,33 @@ const ReleasedMovies = (props) => {
     }
 
     useEffect(() => {
+        // Calling functions to fetch the required data
         loadData();
         loadGenreData();
         loadArtistData();
     }, []);
 
-
+    // Genre Change Handler
     const onGenreChangeHandler = (e) => {
         setGenreFormList(e.target.value);
     }
 
+    // Movie Name Change Handler
     const movieNameChangedHandler = (e) => {
         setNameForm(e.target.value);
     }
 
+    // Artist Change Handler
     const onArtistChangeHandler = (e) => {
         setArtistFormList(e.target.value);
     }
 
+    // Start Release Date Change Handler
     const onStartDateChangeHandler = (e) => {
         setStartDateForm(e.target.value);
     }
 
+    // End Release Date Change Handler
     const onEndDateChangeHandler = (e) => {
         setEndDateForm(e.target.value);
     }
