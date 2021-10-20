@@ -17,23 +17,9 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import Input from "@material-ui/core/Input";
 import Button from "@material-ui/core/Button";
 import {Link} from "react-router-dom";
-import {withStyles} from "@material-ui/core/styles";
-
-
-const styles = (theme) => ({
-    margin: {
-        margin: theme.spacing.unit,
-        minWidth: "240px",
-        maxWidth: "240px"
-    },
-    primary: {
-        primary: theme.palette.primary.light
-    },
-});
 
 const UpcomingMovies = () => {
     const [upcomingMoviesList, setUpcomingMoviesList] = useState([]);
@@ -76,9 +62,10 @@ const UpcomingMovies = () => {
 
 const ReleasedMovies = (props) => {
 
-    const {classes} = props;
-
     const theme = createMuiTheme({
+        typography: {
+            useNextVariants: true,
+        },
         palette: {
             secondary: {main: "#7986cb"}
         },
@@ -350,4 +337,4 @@ const Home = function (props) {
     )
 }
 
-export default withStyles(styles)(Home);
+export default Home;

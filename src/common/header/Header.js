@@ -4,6 +4,7 @@ import {Button, Tabs, Tab, Typography, Grid, InputLabel, Input, FormHelperText} 
 import Modal from 'react-modal';
 import './Header.css';
 import FormControl from "@material-ui/core/FormControl";
+import {Link} from "react-router-dom";
 
 function TabPanel(props) {
     const {children, value, index, ...other} = props;
@@ -24,6 +25,13 @@ function Error() {
 
 const Header = function (props) {
 
+    useEffect(() => {
+        if (props.match) {
+            setUrl(props.match.url.split("/"));
+        }
+        setToken(localStorage.getItem("token"));
+    }, [props]);
+
     const [addUserForm, setAddUserForm] = useState({
         id: 0,
         first_name: '',
@@ -41,7 +49,7 @@ const Header = function (props) {
     });
     const [loginForm, setLoginForm] = useState({
         id: 0,
-        username: '1@gmail.com',
+        username: '',
         password: '',
         errors: {
             username: '',
@@ -50,9 +58,8 @@ const Header = function (props) {
     });
     const [addUserFormMessage, setAddUserFormMessage] = useState("");
     const [loginFormMessage, setLoginFormMessage] = useState("");
-    const [userInformation, setUserInformation] = useState({});
-    // const [token, setToken] = useState("eyJraWQiOiJkN2NmNzQxYS1mMjViLTQ0YjItOTI3ZS1jYTE3ZWY3NWM2YzQiLCJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJhdWQiOiI2ODE4MmEzMi0yYWQ1LTRhNGUtOWMxOC1jMmVjNDQ4NGRkZDgiLCJpc3MiOiJodHRwczovL21vdmllYXBwLmNvbSIsImV4cCI6MTYzNDYxMSwiaWF0IjoxNjM0NTgyfQ.eZLe8MhYT3Dk2SnNc-yItVKvxIavfLRp2k9FlS9z0XSwtLfPd4OtWINgmGFgCQfEAlaqODoXXCPl1JcOZxb1LA");
     const [token, setToken] = useState("");
+    const [url, setUrl] = useState([]);
 
     async function addUserHandler(newUser) {
 
@@ -93,8 +100,10 @@ const Header = function (props) {
         const headers = await rawResponse.headers;
 
         if (data.status === "ACTIVE") {
+
+            localStorage.setItem('token', headers.get('access-token'));
+            localStorage.setItem('userInfo', data);
             setToken(headers.get('access-token'));
-            setUserInformation(data);
             setModalShow(false)
         } else {
             setLoginFormMessage(data.message);
@@ -113,20 +122,22 @@ const Header = function (props) {
         );
 
         setToken("");
-        setUserInformation("");
         setModalShow(false)
         setLoginFormMessage("");
+        localStorage.clear();
     }
 
     function BeforeLoginButtons() {
         return (
             <Fragment>
-                {/*<Button*/}
-                {/*    variant="contained"*/}
-                {/*    className="custom-button"*/}
-                {/*    color="primary"*/}
-                {/*    onClick={() => setModalShow(true)}>Book*/}
-                {/*    Show</Button>*/}
+                {url[1] === "movie"
+                &&
+                <Button
+                    variant="contained"
+                    className="custom-button"
+                    color="primary"
+                    onClick={() => setModalShow(true)}>Book
+                    Show</Button>}
                 <Button
                     variant="contained"
                     className="custom-button"
@@ -138,12 +149,15 @@ const Header = function (props) {
     function AfterLoginButtons() {
         return (
             <Fragment>
-                {/*<Button*/}
-                {/*    variant="contained"*/}
-                {/*    className="custom-button"*/}
-                {/*    color="primary">Book*/}
-                {/*    Show</Button>*/}
 
+                {url[1] === "movie"
+                &&
+                <Button
+                    variant="contained"
+                    className="custom-button"
+                    color="primary"
+                    component={Link} to={'/bookshow/' + url[2]}
+                >Book Show</Button>}
 
                 <Button
                     variant="contained"
@@ -273,17 +287,13 @@ const Header = function (props) {
         setValue(newValue);
     };
 
-    useEffect(() => {
-        console.log(token)
-        console.log("props: ", props.baseUrl);
-    }, [userInformation]);
-
     return (
         <Fragment>
             <div className="header">
                 <img src={logo} alt="movie app logo" className="appLogo"/>
                 <div>
-                    {token.length === 0 ? <BeforeLoginButtons/> : <AfterLoginButtons/>}
+                    {(token)
+                        ? <AfterLoginButtons/> : <BeforeLoginButtons/>}
                 </div>
             </div>
             <Modal

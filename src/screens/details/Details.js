@@ -1,11 +1,16 @@
 import React, {Fragment, useEffect, useState} from "react";
 import Header from "../../common/header/Header";
-import {GridList, GridListTile, GridListTileBar, Typography} from "@material-ui/core";
+import {createMuiTheme, GridList, GridListTile, GridListTileBar, Typography} from "@material-ui/core";
 import {Link} from "react-router-dom";
 import './Details.css';
 import YouTube from "react-youtube";
 import StarBorderOutlinedIcon from '@material-ui/icons/StarBorderOutlined';
 
+createMuiTheme({
+    typography: {
+        useNextVariants: true,
+    },
+});
 
 const Content = (props) => {
 
@@ -25,6 +30,7 @@ const Content = (props) => {
         });
 
         const data = await rawResponse.json();
+
         const youTubeString = data.trailer_url.split("=")[1];
         const genreString = data.genres.join(", ");
         const tempDate = new Date(data.release_date);
@@ -114,7 +120,7 @@ const Details = function (props) {
 
     return (
         <Fragment>
-            <Header/>
+            <Header {...props}/>
             <Link to={"/"} className="link">
                 <Typography className="back">&#60; Back to Book Show</Typography>
             </Link>
