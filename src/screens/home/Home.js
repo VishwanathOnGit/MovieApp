@@ -63,9 +63,16 @@ const ReleasedMovies = () => {
 
     const [releasedMoviesList, setReleasedMoviesList] = useState([]);
 
+    // Date formatter
+    function dateFormat(dateValue) {
+        const tempDate = new Date(dateValue);
+        return tempDate.toDateString();
+    }
+
     async function loadData() {
         const rawResponse = await fetch("http://localhost:8085/api/v1/movies?status=RELEASED");
         const data = await rawResponse.json();
+
         setReleasedMoviesList(data.movies);
     }
 
@@ -96,6 +103,7 @@ const ReleasedMovies = () => {
                                     alt={movie.title}/>
                                 <GridListTileBar
                                     title={movie.title}
+                                    subtitle={"Release Date:" + dateFormat(movie.release_date)}
                                 />
                             </Link>
                         </GridListTile>
@@ -106,7 +114,7 @@ const ReleasedMovies = () => {
                     width: "24%",
                     margin: "16px"
                 }}>
-                    <Card theme={theme}>
+                    <Card>
                         <CardContent>
                             <Typography>
                                 FIND MOVIES BY:
