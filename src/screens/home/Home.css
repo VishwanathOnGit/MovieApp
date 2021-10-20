@@ -1,0 +1,16 @@
+.formControl {
+    width: 240px !important;
+    margin: 8px !important;
+}
+
+.dispNone {
+    display: none;
+}
+
+.dispBlock {
+    display: block;
+}
+
+.red {
+    color: red;
+}
