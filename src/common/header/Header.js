@@ -42,7 +42,7 @@ const Header = function (props) {
     const [loginForm, setLoginForm] = useState({
         id: 0,
         username: '1@gmail.com',
-        password: '123123',
+        password: '',
         errors: {
             username: '',
             password: ''
@@ -51,7 +51,8 @@ const Header = function (props) {
     const [addUserFormMessage, setAddUserFormMessage] = useState("");
     const [loginFormMessage, setLoginFormMessage] = useState("");
     const [userInformation, setUserInformation] = useState({});
-    const [token, setToken] = useState("eyJraWQiOiJkN2NmNzQxYS1mMjViLTQ0YjItOTI3ZS1jYTE3ZWY3NWM2YzQiLCJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJhdWQiOiI2ODE4MmEzMi0yYWQ1LTRhNGUtOWMxOC1jMmVjNDQ4NGRkZDgiLCJpc3MiOiJodHRwczovL21vdmllYXBwLmNvbSIsImV4cCI6MTYzNDYxMSwiaWF0IjoxNjM0NTgyfQ.eZLe8MhYT3Dk2SnNc-yItVKvxIavfLRp2k9FlS9z0XSwtLfPd4OtWINgmGFgCQfEAlaqODoXXCPl1JcOZxb1LA");
+    // const [token, setToken] = useState("eyJraWQiOiJkN2NmNzQxYS1mMjViLTQ0YjItOTI3ZS1jYTE3ZWY3NWM2YzQiLCJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJhdWQiOiI2ODE4MmEzMi0yYWQ1LTRhNGUtOWMxOC1jMmVjNDQ4NGRkZDgiLCJpc3MiOiJodHRwczovL21vdmllYXBwLmNvbSIsImV4cCI6MTYzNDYxMSwiaWF0IjoxNjM0NTgyfQ.eZLe8MhYT3Dk2SnNc-yItVKvxIavfLRp2k9FlS9z0XSwtLfPd4OtWINgmGFgCQfEAlaqODoXXCPl1JcOZxb1LA");
+    const [token, setToken] = useState("");
 
     async function addUserHandler(newUser) {
 
@@ -101,8 +102,7 @@ const Header = function (props) {
     }
 
     async function logoutHandler(token) {
-
-        const rawResponse = await fetch("http://localhost:8085/api/v1/auth/logout",
+        await fetch("http://localhost:8085/api/v1/auth/logout",
             {
                 method: "POST",
                 headers: {
@@ -121,12 +121,12 @@ const Header = function (props) {
     function BeforeLoginButtons() {
         return (
             <Fragment>
-                <Button
-                    variant="contained"
-                    className="custom-button"
-                    color="primary"
-                    onClick={() => setModalShow(true)}>Book
-                    Show</Button>
+                {/*<Button*/}
+                {/*    variant="contained"*/}
+                {/*    className="custom-button"*/}
+                {/*    color="primary"*/}
+                {/*    onClick={() => setModalShow(true)}>Book*/}
+                {/*    Show</Button>*/}
                 <Button
                     variant="contained"
                     className="custom-button"
@@ -138,11 +138,11 @@ const Header = function (props) {
     function AfterLoginButtons() {
         return (
             <Fragment>
-                <Button
-                    variant="contained"
-                    className="custom-button"
-                    color="primary">Book
-                    Show</Button>
+                {/*<Button*/}
+                {/*    variant="contained"*/}
+                {/*    className="custom-button"*/}
+                {/*    color="primary">Book*/}
+                {/*    Show</Button>*/}
 
 
                 <Button
@@ -275,6 +275,7 @@ const Header = function (props) {
 
     useEffect(() => {
         console.log(token)
+        console.log("props: ", props.baseUrl);
     }, [userInformation]);
 
     return (

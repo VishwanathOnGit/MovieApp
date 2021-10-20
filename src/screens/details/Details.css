@@ -1,0 +1,38 @@
+.back {
+    cursor: pointer;
+    margin: 8px 0px 0px 24px !important;
+}
+
+.link {
+    text-decoration: none;
+}
+
+.detail-container {
+    display: flex;
+}
+
+.section-left {
+    width: 20%;
+}
+.section-center {
+    width: 60%;
+}
+.section-right {
+    width: 20%;
+}
+
+.plot {
+    margin-top: 16px !important;
+}
+
+.player {
+    width: 100%;
+}
+
+.artist {
+    margin: 16px 0 !important;
+}
+
+.hover-star:hover {
+    color: yellow;
+}
